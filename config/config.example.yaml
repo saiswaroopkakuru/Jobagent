@@ -72,7 +72,7 @@ h1b:
 
 resume:
   use_pdf: false
-  resume_pdf_path: resume/your_resume.pdf
+  resume_pdf_path: resume/SAISWAROOPREDDY.pdf
   # Provide your skills here for best scoring. Keys are skills, values are weights (importance).
   skills:
     python: 1.0
