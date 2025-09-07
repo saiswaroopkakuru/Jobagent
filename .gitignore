@@ -1,0 +1,21 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Project
+config/config.yaml
+reports/*.html
+*.db
+*.sqlite
+*.zip
+resume/*.pdf
