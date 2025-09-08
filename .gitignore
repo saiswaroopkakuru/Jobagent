@@ -13,9 +13,9 @@ venv/
 .DS_Store
 
 # Project
-config/config.yaml
+#config/config.yaml
 reports/*.html
 *.db
 *.sqlite
 *.zip
-resume/*.pdf
+#resume/*.pdf

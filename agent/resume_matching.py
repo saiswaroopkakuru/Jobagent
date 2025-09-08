@@ -1,4 +1,3 @@
-
 import os
 from dataclasses import dataclass
 from typing import Dict
@@ -32,8 +31,7 @@ def _extract_text_from_pdf(path: str) -> str:
                 parts.append(page.extract_text() or '')
             except Exception:
                 continue
-        return '
-'.join(parts)
+        return '\n'.join(parts)  # Fix here: correctly join with newline
     except Exception:
         return ''
 

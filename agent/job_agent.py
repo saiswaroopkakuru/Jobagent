@@ -143,10 +143,10 @@ def score_and_filter_jobs(raw_jobs: List[Dict], cfg: Dict, resume_profile: resum
         if entry_score <= 0.0:
             continue
 
-        h1b_conf = job_filters.compute_h1b_confidence(company, f"{title}
-{description}", known_set, cfg)
-        resume_match = resume_matching.compute_match_score(f"{title}
-{description}", resume_profile)
+        h1b_conf = job_filters.compute_h1b_confidence(company, f"{title}"
+"{description}", known_set, cfg)
+        resume_match = resume_matching.compute_match_score(f"{title}"
+"{description}", resume_profile)
 
         min_match = float(cfg.get('resume', {}).get('min_match_score', 0.0))
         if resume_match < min_match:
@@ -179,105 +179,58 @@ def render_html_report(jobs: list, limit: int = 50) -> str:
     rows = []
     for j in jobs[:limit]:
         rows.append(
-            f"<tr>
-"
-            f"  <td><a href='{j.url}' target='_blank' rel='noopener'>{j.title}</a></td>
-"
-            f"  <td>{j.company}</td>
-"
-            f"  <td>{j.location}</td>
-"
-            f"  <td>{j.source}</td>
-"
-            f"  <td>{j.date_posted or ''}</td>
-"
-            f"  <td>{j.resume_match:.2f}</td>
-"
-            f"  <td>{j.h1b_confidence:.2f}</td>
-"
-            f"  <td>{j.entry_level_score:.2f}</td>
-"
-            f"  <td><b>{j.final_score:.2f}</b></td>
-"
-            f"</tr>
-"
+            f"""<tr>
+                <td><a href='{j.url}' target='_blank' rel='noopener'>{j.title}</a></td>
+                <td>{j.company}</td>
+                <td>{j.location}</td>
+                <td>{j.source}</td>
+                <td>{j.date_posted or ''}</td>
+                <td>{j.resume_match:.2f}</td>
+                <td>{j.h1b_confidence:.2f}</td>
+                <td>{j.entry_level_score:.2f}</td>
+                <td><b>{j.final_score:.2f}</b></td>
+            </tr>"""
         )
     table_rows = "".join(rows)
     generated = datetime.utcnow().isoformat() + 'Z'
     html = (
-        "<html>
-"
-        "  <head>
-"
-        "    <meta charset='utf-8'>
-"
-        "    <title>Job AI Agent Report</title>
-"
-        "    <style>
-"
-        "      body { font-family: Arial, sans-serif; padding: 20px; }
-"
-        "      table { border-collapse: collapse; width: 100%; }
-"
-        "      th, td { border: 1px solid #ddd; padding: 8px; }
-"
-        "      th { background-color: #f4f4f4; }
-"
-        "      tr:hover { background: #fafafa; }
-"
-        "    </style>
-"
-        "  </head>
-"
-        "  <body>
-"
-        f"    <h2>Job AI Agent Report</h2>
-"
-        f"    <p>Generated at: {generated}</p>
-"
-        "    <table>
-"
-        "      <thead>
-"
-        "        <tr>
-"
-        "          <th>Title</th>
-"
-        "          <th>Company</th>
-"
-        "          <th>Location</th>
-"
-        "          <th>Source</th>
-"
-        "          <th>Date</th>
-"
-        "          <th>Resume</th>
-"
-        "          <th>H-1B</th>
-"
-        "          <th>Entry</th>
-"
-        "          <th>Score</th>
-"
-        "        </tr>
-"
-        "      </thead>
-"
-        "      <tbody>
-"
-        f"        {table_rows}
-"
-        "      </tbody>
-"
-        "    </table>
-"
-        "  </body>
-"
-        "</html>
-"
+        "<html>"
+        "  <head>"
+        "    <meta charset='utf-8'>"
+        "    <title>Job AI Agent Report</title>"
+        "    <style>"
+        "      body { font-family: Arial, sans-serif; padding: 20px; }"
+        "      table { border-collapse: collapse; width: 100%; }"
+        "      th, td { border: 1px solid #ddd; padding: 8px; }"
+        "      th { background-color: #f4f4f4; }"
+        "      tr:hover { background: #fafafa; }"
+        "    </style>"
+        "  </head>"
+        "  <body>"
+        f"    <h2>Job AI Agent Report</h2>"
+        f"    <p>Generated at: {generated}</p>"
+        "    <table>"
+        "      <thead>"
+        "        <tr>"
+        "          <th>Title</th>"
+        "          <th>Company</th>"
+        "          <th>Location</th>"
+        "          <th>Source</th>"
+        "          <th>Date</th>"
+        "          <th>Resume</th>"
+        "          <th>H-1B</th>"
+        "          <th>Entry</th>"
+        "          <th>Score</th>"
+        "        </tr>"
+        "      </thead>"
+        "      <tbody>"
+        f"        {table_rows}"
+        "      </tbody>"
+        "    </table>"
+        "  </body>"
+        "</html>"
     )
     return html
-
 
 def send_email(cfg: Dict, subject: str, html_body: str):
     email_cfg = cfg.get('email', {})
