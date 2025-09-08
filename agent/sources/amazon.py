@@ -5,7 +5,7 @@ from html import unescape
 from datetime import datetime
 from typing import Dict, List, Optional
 
-AMAZON_JOBS_JSON = "https://www.amazon.jobs/en/search.json"
+API_URL = "https://www.amazon.jobs/en/search.json"
 
 # Reuse one session + set a reasonable UA so we get JSON reliably
 _SESSION = requests.Session()
@@ -105,7 +105,7 @@ def fetch_jobs_amazon(
             "sort": sort,                 # "recent" or "relevant"
         }
 
-        data = _get_json(AMAZON_JOBS_JSON, params=params)
+        data = _get_json(API_URL, params=params)
         if not isinstance(data, dict):
             break
 
@@ -145,7 +145,7 @@ def fetch_jobs_amazon(
                     company=company,
                     location=location,
                     url=url,
-                    source="amazon_jobs",
+                    source="amazon",  # keep consistent with your aggregator usage
                     description=description,
                     date_posted=date_posted,
                 )
