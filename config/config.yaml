@@ -1,0 +1,113 @@
+
+# Example configuration for the Enhanced Job AI Agent
+
+sources:
+  greenhouse:
+    # Company slugs from their Greenhouse boards (add/remove as you like)
+    - databricks
+    - snowflake
+    - stripe
+    - cloudflare
+    - palantir
+    - atlassian
+    - affirm
+    - brex
+    - coinbase
+    - roblox
+  lever:
+    # Company slugs from their Lever boards (add/remove as you like)
+    - notion
+    - airtable
+    - scaleai
+    - robinhood
+    - rippling
+    - discord
+
+filters:
+  entry_level_keywords:
+    - new grad
+    - entry-level
+    - junior
+    - graduate
+    - early career
+    - university
+    - campus
+    - recent graduate
+    - 0-2 years
+    - 1+ years
+  excluded_seniority:
+    - senior
+    - sr.
+    - staff
+    - principal
+    - lead
+    - manager
+    - director
+  titles_of_interest:
+    - software engineer
+    - backend
+    - full stack
+    - machine learning engineer
+    - platform
+    - infrastructure
+    - site reliability
+  require_us_location: true
+
+h1b:
+  # Heuristic detection based on JD text and known sponsor list
+  positive_keywords:
+    - h-1b
+    - h1b
+    - visa sponsorship
+    - sponsor work visa
+    - visa support
+  negative_keywords:
+    - no sponsorship
+    - cannot sponsor
+    - not sponsor
+    - without sponsorship
+    - work authorization without sponsorship
+    - must be authorized to work in the us without sponsorship
+  known_sponsors_file: data/h1b_companies.txt
+
+resume:
+  use_pdf: false
+  resume_pdf_path: resume/your_resume.pdf
+  # Provide your skills here for best scoring. Keys are skills, values are weights (importance).
+  skills:
+    python: 1.0
+    java: 0.8
+    javascript: 0.7
+    typescript: 0.6
+    react: 0.6
+    node: 0.6
+    sql: 1.0
+    postgresql: 0.8
+    mongodb: 0.6
+    aws: 0.8
+    docker: 0.7
+    kubernetes: 0.6
+    linux: 0.6
+    data structures: 0.9
+    algorithms: 0.9
+  titles_of_interest:
+    - software engineer
+    - backend
+    - full stack
+    - new grad
+  min_match_score: 0.35  # 0.0-1.0; jobs below this are dropped
+
+persistence:
+  database_path: data/jobs.db
+
+report:
+  top_n: 50
+
+email:
+  enabled: false
+  smtp_host: ${SMTP_HOST}
+  smtp_port: ${SMTP_PORT}
+  smtp_user: ${SMTP_USER}
+  smtp_pass: ${SMTP_PASS}
+  from_email: ${REPORT_FROM_EMAIL}
+  to_email: ${REPORT_TO_EMAIL}
