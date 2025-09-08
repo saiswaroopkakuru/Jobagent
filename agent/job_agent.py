@@ -17,6 +17,7 @@ import yaml
 
 from .sources.greenhouse import fetch_jobs as fetch_greenhouse_jobs
 from .sources.lever import fetch_jobs as fetch_lever_jobs
+from .sources.amazon import fetch_jobs_amazon as fetch_amazon_jobs
 from . import filters as job_filters
 from . import resume_matching
 
@@ -98,25 +99,92 @@ def upsert_job(db_path: str, job: Job):
     con.close()
 
 
+# def fetch_all_jobs(cfg: Dict) -> List[Dict]:
+#     jobs: List[Dict] = []
+#     gh_companies = cfg.get('sources', {}).get('greenhouse', []) or []
+#     lever_companies = cfg.get('sources', {}).get('lever', []) or []
+
+#     for slug in gh_companies:
+#         try:
+#             jobs.extend(fetch_greenhouse_jobs(slug))
+#         except Exception as e:
+#             logging.warning(f"Greenhouse fetch failed for {slug}: {e}")
+
+#     for slug in lever_companies:
+#         try:
+#             jobs.extend(fetch_lever_jobs(slug))
+#         except Exception as e:
+#             logging.warning(f"Lever fetch failed for {slug}: {e}")
+
+#     return jobs
+
+# New code with amazon jobs included
+
 def fetch_all_jobs(cfg: Dict) -> List[Dict]:
     jobs: List[Dict] = []
-    gh_companies = cfg.get('sources', {}).get('greenhouse', []) or []
-    lever_companies = cfg.get('sources', {}).get('lever', []) or []
+    seen_urls = set()
 
+    def _add_results(results: List[Dict]):
+        for r in results:
+            u = (r.get('url') or '').strip()
+            if not u or u in seen_urls:
+                continue
+            seen_urls.add(u)
+            jobs.append(r)
+
+    # Greenhouse
+    gh_companies = cfg.get('sources', {}).get('greenhouse', []) or []
     for slug in gh_companies:
         try:
-            jobs.extend(fetch_greenhouse_jobs(slug))
+            _add_results(fetch_greenhouse_jobs(slug))
         except Exception as e:
             logging.warning(f"Greenhouse fetch failed for {slug}: {e}")
 
+    # Lever
+    lever_companies = cfg.get('sources', {}).get('lever', []) or []
     for slug in lever_companies:
         try:
-            jobs.extend(fetch_lever_jobs(slug))
+            _add_results(fetch_lever_jobs(slug))
         except Exception as e:
             logging.warning(f"Lever fetch failed for {slug}: {e}")
 
-    return jobs
+    # Amazon (unofficial JSON endpoint)
+    amazon_cfg = cfg.get('sources', {}).get('amazon', {}) or {}
+    if amazon_cfg:
+        # Support either a single query/location or lists
+        queries = amazon_cfg.get('queries')
+        if queries is None:
+            # backward-compat: allow single 'query'
+            q = amazon_cfg.get('query', '')
+            queries = [q]
+        locations = amazon_cfg.get('locations')
+        if locations is None:
+            # backward-compat: allow single 'location_query'
+            lq = amazon_cfg.get('location_query', '')
+            locations = [lq]
 
+        country = amazon_cfg.get('country', 'USA')        # API expects codes like "USA"
+        page_size = int(amazon_cfg.get('page_size', 100))
+        max_pages = int(amazon_cfg.get('max_pages', 3))
+        sort = amazon_cfg.get('sort', 'recent')
+
+        # Avoid combinatorial blow-up if user provides large lists
+        for q in (queries or ['']):
+            for loc in (locations or ['']):
+                try:
+                    res = fetch_amazon_jobs(
+                        query=q or "",
+                        location_query=loc or "",
+                        country=country,
+                        page_size=page_size,
+                        max_pages=max_pages,
+                        sort=sort,
+                    )
+                    _add_results(res)
+                except Exception as e:
+                    logging.warning(f"Amazon fetch failed for query='{q}', loc='{loc}': {e}")
+
+    return jobs
 
 def score_and_filter_jobs(raw_jobs: List[Dict], cfg: Dict, resume_profile: resume_matching.ResumeProfile) -> List[Job]:
     known_sponsors_file = cfg.get('h1b', {}).get('known_sponsors_file')
