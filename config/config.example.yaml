@@ -22,6 +22,21 @@ sources:
     - robinhood
     - rippling
     - discord
+  amazon:
+    # Uses the unofficial amazon.jobs search.json endpoint via your fetch_amazon_jobs
+    # Queries feed the "base_query"; locations feed "loc_query".
+    queries:
+      - "software engineer"
+      - "machine learning"
+      - "new grad"
+    locations:
+      - ""  # empty = no location filter (search all in country below)
+      - "Seattle, Washington, United States"
+      - "New York, New York, United States"
+    country: "USA"      # 3-letter country code expected by the endpoint
+    page_size: 100
+    max_pages: 2
+    sort: "recent"      # or "relevant"
 
 filters:
   entry_level_keywords:
